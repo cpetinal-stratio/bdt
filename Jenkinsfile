@@ -23,11 +23,11 @@ hose {
         ['MONGODB': [
            'image': 'stratio/mongo:3.0.4']],
         ['ELASTICSEARCH': [
-           'image': 'elasticsearch:7.4.2',
-           'env': [
-                 'ES_JAVA_OPTS="-Des.cluster.name=%%JUID -Des.network.host=%%OWNHOSTNAME"'],
-           'sleep': 40,
-           'healthcheck': 9300]],
+        'image': 'elasticsearch:7.4.2',
+        'env': [
+        'ES_JAVA_OPTS="-Des.cluster.name=%%JUID -Des.network.host=%%OWNHOSTNAME -Ddiscovery.type=single-node"'],
+        'sleep': 40,
+        'healthcheck': 9300]],
         ['CASSANDRA': [
            'image': 'stratio/cassandra-lucene-index:3.0.7.3',
            'volumes':[
