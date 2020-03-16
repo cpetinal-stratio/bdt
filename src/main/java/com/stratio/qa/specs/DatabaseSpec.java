@@ -598,24 +598,6 @@ public class DatabaseSpec extends BaseGSpec {
     }
 
     /**
-     * Index a document within a mapping type.
-     *
-     * @param indexName
-     * @param key
-     * @param value
-     * @throws Exception
-     */
-    @When("^I index a document in the index named '(.+?)' with key '(.+?)' and value '(.+?)'$")
-    public void indexElasticsearchDocumentWithMapping(String indexName, String key, String value) throws Exception {
-        ArrayList<XContentBuilder> mappingsource = new ArrayList<XContentBuilder>();
-        XContentBuilder builder = jsonBuilder().startObject().field(key, value).endObject();
-        mappingsource.add(builder);
-        commonspec.getElasticSearchClient().createMapping(indexName, mappingsource);
-    }
-
-
-
-    /**
      * Index a document.
      *
      * @param baseData

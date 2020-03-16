@@ -34,6 +34,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.client.indices.GetMappingsRequest;
 import org.elasticsearch.client.indices.GetMappingsResponse;
+import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.TimeValue;
@@ -81,7 +82,7 @@ public class ElasticSearchUtils extends RestClient.FailureListener {
      * Default constructor.
      */
     public ElasticSearchUtils() {
-        this.es_host = System.getProperty("ES_NODE", "127.0.0.1");
+        this.es_host = System.getProperty("ES_NODE", "192.168.173.2");
         this.es_native_port = Integer.valueOf(System.getProperty("ES_NATIVE_PORT", "9200"));
     }
 
@@ -265,39 +266,6 @@ public class ElasticSearchUtils extends RestClient.FailureListener {
         return getElasticsearchIndexSetting(indexName, "index.number_of_shards");
     }
 
-
-
-    /**
-     * Create a mapping over an index
-     *
-     * @param indexName
-     * @param mappingSource the data that has to be inserted in the mapping.
-     */
-    public void createMapping(String indexName, ArrayList<XContentBuilder> mappingSource) {
-
-        if (!this.indexExists(indexName)) {
-
-            if (!createSingleIndex(indexName)) {
-                throw new ElasticsearchException("Failed to create " + indexName + " index.");
-
-            }
-        }
-        //If the index does not exists, it will be created without options
-        BulkRequest bulkRequest = new BulkRequest();
-
-
-        for (int i = 0; i < mappingSource.size(); i++) {
-            int aux = i + 1;
-            bulkRequest.add(new IndexRequest(indexName).id(String.valueOf(aux)).source(mappingSource.get(i)));
-        }
-
-        try {
-            client.bulk(bulkRequest, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            throw new ElasticsearchException("Error in bulk request");
-
-        }
-    }
 
     /**
      * Check if a mapping exists in an expecific index.
