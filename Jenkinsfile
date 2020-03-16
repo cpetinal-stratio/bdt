@@ -25,7 +25,9 @@ hose {
         ['ELASTICSEARCH': [
         'image': 'elasticsearch:7.4.2',
         'env': [
-        'ES_JAVA_OPTS="-Des.cluster.name=%%JUID -Des.network.host=%%OWNHOSTNAME -Des.enforce.bootstrap.checks=true -Ddiscovery.seed_hosts=127.0.0.1:9300 -Ddiscovery.type=single-node"'],
+        'ES_JAVA_OPTS="-Des.cluster.name=%%JUID -Des.network.host=%%OWNHOSTNAME -Des.enforce.bootstrap.checks=true"',
+        'discovery.type=single-node'
+        ],
         'sleep': 40,
         'healthcheck': 9300]],
         ['CASSANDRA': [
