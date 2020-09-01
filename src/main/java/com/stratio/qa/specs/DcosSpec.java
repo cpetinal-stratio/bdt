@@ -146,7 +146,7 @@ public class DcosSpec extends BaseGSpec {
             if (gov != null) {
                 tokenList = new String[]{"user", "dcos-acs-auth-cookie", "stratio-governance-auth"};
             }
-            if (discoveryCookie != null) {
+            if ((discoveryCookie != null) && (gov == null)) {
                 tokenList = new String[]{discoveryCookie};
             }
             List<com.ning.http.client.cookie.Cookie> cookiesAtributes = addSsoToken(ssoCookies, tokenList);
