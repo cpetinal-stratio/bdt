@@ -135,8 +135,8 @@ public class DcosSpec extends BaseGSpec {
      * @param passWord : password
      * @throws Exception exception
      */
-    @Given("^I( do not)? set sso( governance)? token using host '(.+?)' with user '(.+?)' and password '(.+?)'( and tenant '(.+?)')?( without host name verification)?( with discovery cookie '(.+?)')?$")
-    public void setGoSecSSOCookie(String set, String gov, String ssoHost, String userName, String passWord, String tenant, String hostVerifier, String discoveryCookie) throws Exception {
+    @Given("^I( do not)? set sso( governance)? token using host '(.+?)' with user '(.+?)' and password '(.+?)'( and tenant '(.+?)')?( without host name verification)?$")
+    public void setGoSecSSOCookie(String set, String gov, String ssoHost, String userName, String passWord, String tenant, String hostVerifier) throws Exception {
         if (set == null) {
             GosecSSOUtils ssoUtils = new GosecSSOUtils(ssoHost, userName, passWord, tenant, gov);
             ssoUtils.setVerifyHost(hostVerifier == null);
@@ -145,9 +145,6 @@ public class DcosSpec extends BaseGSpec {
             String[] tokenList = {"user", "dcos-acs-auth-cookie"};
             if (gov != null) {
                 tokenList = new String[]{"user", "dcos-acs-auth-cookie", "stratio-governance-auth"};
-            }
-            if ((discoveryCookie != null) && (gov == null)) {
-                tokenList = new String[]{discoveryCookie};
             }
             List<com.ning.http.client.cookie.Cookie> cookiesAtributes = addSsoToken(ssoCookies, tokenList);
 
@@ -166,11 +163,32 @@ public class DcosSpec extends BaseGSpec {
             if (ssoCookies.get("user") != null) {
                 ThreadProperty.set("dcosUserCookie", ssoCookies.get("user"));
             }
-            if (ssoCookies.get(discoveryCookie) != null) {
-                ThreadProperty.set(discoveryCookie, ssoCookies.get(discoveryCookie));
-            }
             commonspec.setCookies(cookiesAtributes);
         }
+    }
+
+    /**
+     * Generate token to authenticate in gosec SSO with Discovery
+     *
+     * @param ssoHost  : current sso host
+     * @param userName : username
+     * @param passWord : password
+     * @param discoveryCookie : Cookie for discovery
+     * @throws Exception exception
+     */
+    @Given("I set sso discovery token using host '(.+?)' with user '(.+?)' and password '(.+?)'( and tenant '(.+?)')?( without host name verification)? with cookie name '(.+?)'$")
+    public void setGoSecSSOCookieforDiscovery(String ssoHost, String userName, String passWord, String tenant, String hostVerifier, String discoveryCookie) throws Exception {
+        GosecSSOUtils ssoUtils = new GosecSSOUtils(ssoHost, userName, passWord, tenant, null);
+        ssoUtils.setVerifyHost(hostVerifier == null);
+        HashMap<String, String> ssoCookies = ssoUtils.ssoTokenGenerator();
+        String[] tokenList = new String[]{discoveryCookie};
+        List<com.ning.http.client.cookie.Cookie> cookiesAtributes = addSsoToken(ssoCookies, tokenList);
+        this.commonspec.getLogger().debug("Discovery Cookie to set:");
+        for (String cookie : tokenList) {
+            this.commonspec.getLogger().debug("\t" + cookie + ":" + ssoCookies.get(cookie));
+        }
+        ThreadProperty.set(discoveryCookie, ssoCookies.get(discoveryCookie));
+        commonspec.setCookies(cookiesAtributes);
     }
 
     /**
@@ -912,7 +930,7 @@ public class DcosSpec extends BaseGSpec {
         }
 
         // Set sso token
-        setGoSecSSOCookie(null, null, ThreadProperty.get("EOS_ACCESS_POINT"), ThreadProperty.get("DCOS_USER"), System.getProperty("DCOS_PASSWORD"), ThreadProperty.get("DCOS_TENANT"), null, null);
+        setGoSecSSOCookie(null, null, ThreadProperty.get("EOS_ACCESS_POINT"), ThreadProperty.get("DCOS_USER"), System.getProperty("DCOS_PASSWORD"), ThreadProperty.get("DCOS_TENANT"), null);
         // Securely send requests
         commonspec.setRestProtocol("https://");
         commonspec.setRestHost(ThreadProperty.get("EOS_ACCESS_POINT"));
@@ -1329,7 +1347,7 @@ public class DcosSpec extends BaseGSpec {
         }
         String marathonEndPoint = "/service/marathon/v2/apps";
         // Set sso token
-        setGoSecSSOCookie(null, null, ThreadProperty.get("EOS_ACCESS_POINT"), ThreadProperty.get("DCOS_USER"), System.getProperty("DCOS_PASSWORD"), ThreadProperty.get("DCOS_TENANT"), null, null);
+        setGoSecSSOCookie(null, null, ThreadProperty.get("EOS_ACCESS_POINT"), ThreadProperty.get("DCOS_USER"), System.getProperty("DCOS_PASSWORD"), ThreadProperty.get("DCOS_TENANT"), null);
         // Securely send requests
         commonspec.setRestProtocol("https://");
         commonspec.setRestHost(ThreadProperty.get("EOS_ACCESS_POINT"));

@@ -2518,7 +2518,7 @@ public class CommonG {
 
         // Set sso token
         DcosSpec dcosSpec = new DcosSpec(this);
-        dcosSpec.setGoSecSSOCookie(null, null, ThreadProperty.get("EOS_ACCESS_POINT"), user, password, tenant, null, null);
+        dcosSpec.setGoSecSSOCookie(null, null, ThreadProperty.get("EOS_ACCESS_POINT"), user, password, tenant, null);
 
         // Securely send requests
         this.setRestProtocol("https://");
